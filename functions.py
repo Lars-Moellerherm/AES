@@ -1,7 +1,7 @@
 import numpy as np
 from BitVector import *
 from state import state
-
+import re
 
 
 def split(file):
@@ -18,20 +18,25 @@ def split(file):
             filetype +=i
     return filename, filetype
 
+def get_path(filename):
+    a=list(re.finditer('/',filename))
+    idx = a[-1].end()
+    return filename[:idx], filename[idx:]
+
 def encryption(text,key):
     rounds = 10;
     key = key_expansion(key)
-    
+
     text = add_round_key(text,key[0])
-    
+
     for i in range(rounds-1):
- 
+
         text = substitute_bytes(text)
-        
+
         text = shift_rows(text)
-        
+
         text = mix_column(text)
-        
+
         text = add_round_key(text,key[i+1])
 
     text = substitute_bytes(text)
@@ -39,30 +44,30 @@ def encryption(text,key):
     text = shift_rows(text)
 
     text = add_round_key(text,key[rounds])
-    
+
     return text
 
 def decryption(text,key):
     rounds = 10
     key = key_expansion(key)
-    
+
     text = add_round_key(text,key[-1])
-    
+
     for i in range(rounds-1):
         text = inverse_shift_rows(text)
-        
+
         text = inverse_substitute_bytes(text)
-        
+
         text = add_round_key(text,key[-i-2])
-        
+
         text = inverse_mix_column(text)
-        
+
     text = inverse_shift_rows(text)
-    
+
     text = inverse_substitute_bytes(text)
-        
+
     text = add_round_key(text,key[0])
-    
+
     return text
 
 def key_expansion(key):

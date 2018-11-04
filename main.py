@@ -9,6 +9,7 @@ from tqdm import tqdm
 
 file = str(input("file:"))
 filename, filekind = split(file)
+filepath, name = get_path(filename)
 key = str(input("key (16 ascii symbols):"))
 file = filename+'.'+filekind
 task = str(input("encryption (enc) or decryption(dec):"))
@@ -47,23 +48,23 @@ if task == 'enc':
     for i in tqdm(range(state_number_text)):
         key_round = key.deep_copy()
         text_enc.append(encryption(text[i],key_round))
-    
+
     text_plain = BitVector(size=0)
     for i in range(state_number_text):
         text_plain += text_enc[i].get_plain()
-        
-    out_filename = 'enc_'+filename+'.bits'
+
+    out_filename = filepath+'enc_'+name+'.bits'
 elif task == 'dec':
     text_dec = []
     for i in tqdm(range(state_number_text)):
         key_round = key.deep_copy()
         text_dec.append(decryption(text[i],key_round))
-    
+
     text_plain = BitVector(size=0)
     for i in range(state_number_text):
         text_plain += text_dec[i].get_plain()
-        
-    out_filename = 'dec_'+filename[4:]+'.'+final_filekind
+
+    out_filename = filepath+'dec_'+name[4:]+'.'+final_filekind
 else:
     print("The task isn't choosen right. choose enc or dec.")
     mistake = 1
@@ -74,5 +75,3 @@ if mistake==0:
     FILEOUT = open(out_filename, 'wb')
     text_plain.write_to_file(FILEOUT)
     FILEOUT.close()
-
-
